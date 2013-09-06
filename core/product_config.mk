@@ -350,24 +350,13 @@ endif
 # $(PRODUCT_OUT), so it should look like, e.g., "system/etc/file.xml".
 # The rules for these copy steps are defined in build/core/Makefile.
 # The optional :<owner> is used to indicate the owner of a vendor file.
+_boot_animation := $(strip $(lastword $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_BOOTANIMATION)))
+ifneq ($(_boot_animation),)
 PRODUCT_COPY_FILES := \
-    $(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_COPY_FILES))
-
-# We might want to skip items listed in PRODUCT_COPY_FILES for
-# various reasons. This is useful for replacing a binary module with one
-# built from source. This should be a list of destination files under $OUT
-PRODUCT_COPY_FILES_OVERRIDES := \
-	$(addprefix %:, $(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_COPY_FILES_OVERRIDES)))
-
-ifneq ($(PRODUCT_COPY_FILES_OVERRIDES),)
-    PRODUCT_COPY_FILES := $(filter-out $(PRODUCT_COPY_FILES_OVERRIDES), $(PRODUCT_COPY_FILES))
+    $(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_COPY_FILES)) \
+    $(_boot_animation):system/media/bootanimation.zip
 endif
-
-.PHONY: listcopies
-listcopies:
-	@echo "Copy files: $(PRODUCT_COPY_FILES)"
-	@echo "Overrides: $(PRODUCT_COPY_FILES_OVERRIDES)"
-
+_boot_animation :=
 
 # A list of property assignments, like "key = value", with zero or more
 # whitespace characters on either side of the '='.
