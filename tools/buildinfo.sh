@@ -43,6 +43,7 @@ if [ "$TARGET_UNIFIED_DEVICE" == "" ] ; then
 fi
 echo "ro.build.characteristics=$TARGET_AAPT_CHARACTERISTICS"
 
-echo "ro.tg.device=$TG_DEVICE"
+# OctOS properties
+echo "ro.oct.device=$OCT_DEVICE"
 
 echo "# end build properties"
