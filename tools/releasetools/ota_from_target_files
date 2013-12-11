@@ -527,28 +527,6 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
   script.Print("{x}...Formatting system partition...")
   script.Print("")
 
-  script.ShowProgress(0.5, 0)
-  script.Print("")
-  script.Print("")
-#  script.Print("    _____ _____  ___  ___  ___ ")
-#  script.Print("   |_   _|  ___|/ _ \ |  \/  | ")
-#  script.Print("     | | | |__ / /_\ \| .  . | ")
-#  script.Print("     | | |  __||  _  || |\/| | ")
-#  script.Print("     | | | |___| | | || |  | | ")
-#  script.Print("     \_/ \____/\_| |_/\_|  |_/ ")
-#  script.Print("")
-  script.Print(" _____ _   ____  ______  ____   __ ")
-  script.Print("|  __ \ | | |  \/  ||  \/  \ \ / / ")
-  script.Print("| |  \/ | | | .  . || .  . |\ V /  ")
-  script.Print("| | __| | | | |\/| || |\/| | \ /   ")
-  script.Print("| |_\ \ |_| | |  | || |  | | | |   ")
-  script.Print("\_____/\___/\_|  |_/\_|  |_/ \_/   ")
-  script.Print("")
-  script.Print("        <<< AOSP 4.4.4 >>>")
-  script.Print("")
-  script.Print("{x}...Formatting system partition...")
-  script.Print("")
-
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
 
