@@ -539,7 +539,7 @@ function lunch()
         answer=$1
     else
         print_lunch_menu
-        echo -n "Which would you like? [aosp_arm-userdebug] "
+        echo -n "Which would you like? [aosp_arm-eng] "
         read answer
     fi
 
