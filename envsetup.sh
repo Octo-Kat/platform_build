@@ -16,17 +16,8 @@ Invoke ". build/envsetup.sh" from your shell to add the following functions to y
 - jgrep:   Greps on all local Java files.
 - resgrep: Greps on all local res/*.xml files.
 - godir:   Go to the directory containing a file.
-- tgremote: Add git remote for TG Gerrit Review.
-- tggerrit: A Git wrapper that fetches/pushes patch from/to TG Gerrit Review.
-- tgrebase: Rebase a Gerrit change and push it again.
-- aospremote: Add git remote for matching AOSP repository.
 - mka:      Builds using SCHED_BATCH on all processors.
-- mkap:     Builds the module(s) using mka and pushes them to the device.
 - cmka:     Cleans and builds using mka.
-- repolastsync: Prints date and time of last repo sync.
-- reposync: Parallel repo sync using ionice and SCHED_BATCH.
-- installboot: Installs a boot.img to the connected device.
-- installrecovery: Installs a recovery.img to the connected device.
 
 Look at the source to view more functions. The complete list is:
 EOF
@@ -493,43 +484,53 @@ function brunch()
 {
     breakfast $*
     if [ $? -eq 0 ]; then
-        time mka gummy
+mka bacon
     else
-        echo "No such item in brunch menu. Try 'breakfast'"
+echo "No such item in brunch menu. Try 'breakfast'"
         return 1
     fi
-    return $?
+return $?
+}
+
+function mka() {
+    case `uname -s` in
+        Darwin)
+            make -j `sysctl hw.ncpu|cut -d" " -f2` "$@"
+            ;;
+        *)
+            schedtool -B -n 1 -e ionice -n 1 make -j$(cat /proc/cpuinfo | grep "^processor" | wc -l) "$@"
+            ;;
+    esac
 }
 
 function breakfast()
 {
     target=$1
-    TG_DEVICES_ONLY="true"
+    OCT_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
-    for f in `/bin/ls vendor/Gummy/vendorsetup.sh 2> /dev/null`
+    add_lunch_combo full-eng
+    for f in `/bin/ls vendor/oct/vendorsetup.sh 2> /dev/null`
         do
-            echo "including $f"
+echo "including $f"
             . $f
         done
-    unset f
+unset f
 
     if [ $# -eq 0 ]; then
         # No arguments, so let's have the full menu
         lunch
     else
-        echo "z$target" | grep -q "-"
+echo "z$target" | grep -q "-"
         if [ $? -eq 0 ]; then
             # A buildtype was specified, assume a full device name
             lunch $target
         else
-            # This is probably just the TG model name
-            lunch tg_$target-userdebug
+            # This is probably just the OCT model name
+            lunch oct_$target-userdebug
         fi
-    fi
-    return $?
+fi
+return $?
 }
-
-alias bib=breakfast
 
 function lunch()
 {
