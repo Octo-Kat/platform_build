@@ -66,14 +66,14 @@ TARGET_arm_CFLAGS :=    -O2 \
                         -fomit-frame-pointer \
                         -fstrict-aliasing \
                         -funswitch-loops \
-                        -Wno-error=unused-parameter
+                        -Wno-unused-parameter
                         
 # Modules can choose to compile some source as thumb.
 TARGET_thumb_CFLAGS :=  -mthumb \
                         -Os \
                         -fomit-frame-pointer \
                         -fno-strict-aliasing \
-                        -Wno-error=unused-parameter
+                        -Wno-unused-parameter
 
 # Set FORCE_ARM_DEBUGGING to "true" in your buildspec.mk
 # or in your environment to force a full arm build, even for
@@ -112,7 +112,7 @@ TARGET_GLOBAL_CFLAGS += \
 			$(arch_variant_cflags) \
 			-include $(android_config_h) \
 			-I $(dir $(android_config_h)) \
-			-Wno-error=unused-parameter
+			-Wno-unused-parameter
 
 # This warning causes dalvik not to build with gcc 4.6+ and -Werror.
 # We cannot turn it off blindly since the option is not available
