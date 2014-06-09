@@ -506,10 +506,10 @@ function mka() {
 function breakfast()
 {
     target=$1
-    OCT_DEVICES_ONLY="true"
+    [[*]_[*]]_DEVICES_ONLY="true"
     unset LUNCH_MENU_CHOICES
     add_lunch_combo full-eng
-    for f in `/bin/ls vendor/oct/vendorsetup.sh 2> /dev/null`
+    for f in `/bin/ls vendor/[a-z][a-z][a-z]/vendorsetup.sh 2> /dev/null`
         do
 echo "including $f"
             . $f
@@ -526,7 +526,7 @@ echo "z$target" | grep -q "-"
             lunch $target
         else
             # This is probably just the OCT model name
-            lunch oct_$target-userdebug
+            lunch $TARGET_PRODUCT-$TARGET_BUILD_VARIANT
         fi
 fi
 return $?
@@ -540,7 +540,7 @@ function lunch()
         answer=$1
     else
         print_lunch_menu
-        echo -n "Which would you like? [aosp_arm-eng] "
+        echo -n "Which aosp device would you like? "
         read answer
     fi
 
@@ -548,7 +548,7 @@ function lunch()
 
     if [ -z "$answer" ]
     then
-        selection=aosp_arm-eng
+        selection=full_$target-userdebug
     elif (echo -n $answer | grep -q -e "^[0-9][0-9]*$")
     then
         if [ $answer -le ${#LUNCH_MENU_CHOICES[@]} ]
