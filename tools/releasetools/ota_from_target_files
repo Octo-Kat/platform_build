@@ -522,7 +522,7 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
   script.Print("")
   script.Print("")
   script.Print("")
-  script.Print("         <<< AOSP 4.4.3 >>>")
+  script.Print("         <<< AOSP 4.4.4 >>>")
   script.Print("")
   script.Print("{x}...Formatting system partition...")
   script.Print("")
