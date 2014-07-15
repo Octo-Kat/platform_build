@@ -156,6 +156,7 @@ ifneq ($(words $(board_config_mk)),1)
   $(error Multiple board config files for TARGET_DEVICE $(TARGET_DEVICE): $(board_config_mk))
 endif
 include $(board_config_mk)
+-include vendor/extra/BoardConfigExtra.mk
 ifeq ($(TARGET_ARCH),)
   $(error TARGET_ARCH not defined by board config: $(board_config_mk))
 endif
@@ -499,8 +500,10 @@ RS_PREBUILT_COMPILER_RT := prebuilts/sdk/renderscript/lib/$(TARGET_ARCH)/libcomp
 # Rules for QCOM targets
 include $(BUILD_SYSTEM)/qcom_target.mk
 
+ifneq ($(OCT_BUILD),)
 ## We need to be sure the global selinux policies are included
 ## last, to avoid accidental resetting by device configs
-$(eval include vendor/carbon/sepolicy/sepolicy.mk)
+$(eval include vendor/oct/sepolicy/sepolicy.mk)
+endif
 
 include $(BUILD_SYSTEM)/dumpvar.mk

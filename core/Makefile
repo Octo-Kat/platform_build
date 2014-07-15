@@ -189,13 +189,12 @@ else
 system_prop_file := $(wildcard $(TARGET_DEVICE_DIR)/system.prop)
 endif
 
-.PHONY: $(INSTALLED_BUILD_PROP_TARGET)
 $(INSTALLED_BUILD_PROP_TARGET): $(BUILDINFO_SH) $(INTERNAL_BUILD_ID_MAKEFILE) $(BUILD_SYSTEM)/version_defaults.mk $(system_prop_file)
 	@echo Target buildinfo: $@
 	@mkdir -p $(dir $@)
 	$(hide) TARGET_BUILD_TYPE="$(TARGET_BUILD_VARIANT)" \
 			TARGET_DEVICE="$(TARGET_VENDOR_DEVICE_NAME)" \
-			CARBON_DEVICE="$(TARGET_DEVICE)" \
+			OCT_DEVICE="$(TARGET_DEVICE)" \
 			PRODUCT_NAME="$(TARGET_VENDOR_PRODUCT_NAME)" \
 			PRODUCT_BRAND="$(PRODUCT_BRAND)" \
 			PRODUCT_DEFAULT_LANGUAGE="$(call default-locale-language,$(PRODUCT_LOCALES))" \
@@ -463,11 +462,6 @@ $(INSTALLED_BOOTIMAGE_TARGET): $(MKEXT2IMG) $(INTERNAL_BOOTIMAGE_FILES)
 	$(hide) $(MKEXT2BOOTIMG) $(INTERNAL_BOOTIMAGE_ARGS) --output $@
 	@echo -e ${CL_CYN}"Made boot image: $@"${CL_RST}
 
-.PHONY: bootimage-nodeps
-bootimage-nodeps: $(MKEXT2IMG)
-	@echo "make $@: ignoring dependencies"
-	$(hide) $(MKEXT2BOOTIMG) $(INTERNAL_BOOTIMAGE_ARGS) --output $(INSTALLED_BOOTIMAGE_TARGET)
-
 else ifndef BOARD_CUSTOM_BOOTIMG_MK # TARGET_BOOTIMAGE_USE_EXT2 != true
 
 $(INSTALLED_BOOTIMAGE_TARGET): $(MKBOOTIMG) $(INTERNAL_BOOTIMAGE_FILES)
@@ -475,12 +469,6 @@ $(INSTALLED_BOOTIMAGE_TARGET): $(MKBOOTIMG) $(INTERNAL_BOOTIMAGE_FILES)
 	$(hide) $(MKBOOTIMG) $(INTERNAL_BOOTIMAGE_ARGS) $(BOARD_MKBOOTIMG_ARGS) --output $@
 	$(hide) $(call assert-max-image-size,$@,$(BOARD_BOOTIMAGE_PARTITION_SIZE),raw)
 	@echo -e ${CL_CYN}"Made boot image: $@"${CL_RST}
-
-.PHONY: bootimage-nodeps
-bootimage-nodeps: $(MKBOOTIMG)
-	@echo "make $@: ignoring dependencies"
-	$(hide) $(MKBOOTIMG) $(INTERNAL_BOOTIMAGE_ARGS) $(BOARD_MKBOOTIMG_ARGS) --output $(INSTALLED_BOOTIMAGE_TARGET)
-	$(hide) $(call assert-max-image-size,$(INSTALLED_BOOTIMAGE_TARGET),$(BOARD_BOOTIMAGE_PARTITION_SIZE),raw)
 
 endif # ifndef BOARD_CUSTOM_BOOTIMG_MK
 
@@ -931,7 +919,7 @@ SYSTEMIMAGE_SOURCE_DIR := $(TARGET_OUT)
 ifneq ($(INSTALLED_RECOVERYIMAGE_TARGET),)
 intermediates := $(call intermediates-dir-for,PACKAGING,recovery_patch)
 ifndef BOARD_CUSTOM_BOOTIMG_MK
-ifeq ($(CARBON_BUILD),)
+ifeq ($(OCT_BUILD),)
 RECOVERY_FROM_BOOT_PATCH := $(intermediates)/recovery_from_boot.p
 else
 RECOVERY_FROM_BOOT_PATCH :=
@@ -1403,9 +1391,7 @@ ifdef PRODUCT_EXTRA_RECOVERY_KEYS
 	$(hide) echo "extra_recovery_keys=$(PRODUCT_EXTRA_RECOVERY_KEYS)" >> $(zip_root)/META/misc_info.txt
 endif
 	$(hide) echo "mkbootimg_args=$(BOARD_MKBOOTIMG_ARGS)" >> $(zip_root)/META/misc_info.txt
-ifneq ($(SKIP_SET_METADATA),true)
 	$(hide) echo "use_set_metadata=1" >> $(zip_root)/META/misc_info.txt
-endif
 	$(hide) echo "multistage_support=1" >> $(zip_root)/META/misc_info.txt
 	$(hide) echo "update_rename_support=1" >> $(zip_root)/META/misc_info.txt
 	$(hide) echo "ota_script_path=$(OTA_FROM_TARGET_SCRIPT)" >> $(zip_root)/META/misc_info.txt
@@ -1469,7 +1455,7 @@ endif
 ifeq ($(WITH_GMS),true)
     $(INTERNAL_OTA_PACKAGE_TARGET): backuptool := false
 else
-ifeq ($(CARBON_BUILD),true)
+ifneq ($(OCT_BUILD),)
     $(INTERNAL_OTA_PACKAGE_TARGET): backuptool := true
 else
     $(INTERNAL_OTA_PACKAGE_TARGET): backuptool := false
@@ -1490,12 +1476,6 @@ ifneq ($(TARGET_NO_SEPARATE_RECOVERY),)
     $(INTERNAL_OTA_PACKAGE_TARGET): separate_recovery := --no_separate_recovery=true
 endif
 
-ifeq ($(TARGET_DISABLE_PERSIST),true)
-    $(INTERNAL_OTA_PACKAGE_TARGET): persist := false
-else
-    $(INTERNAL_OTA_PACKAGE_TARGET): persist := true
-endif
-
 $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	@echo -e ${CL_YLW}"Package OTA:"${CL_RST}" $@"
 	MKBOOTIMG=$(BOARD_CUSTOM_BOOTIMG_MK) \
@@ -1503,20 +1483,22 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 	   -p $(HOST_OUT) \
 	   -k $(KEY_CERT_PAIR) \
 	   --backup=$(backuptool) \
-	   --persist=$(persist) \
 	   --override_device=$(override_device) \
 	   $(override_prop) \
 	   $(separate_recovery) \
 	   $(BUILT_TARGET_FILES_PACKAGE) $@
 
-.PHONY: otapackage carbon
+OCT_TARGET_PACKAGE := $(PRODUCT_OUT)/cm-$(OCT_VERSION).zip
+
+.PHONY: otapackage bacon
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
-carbon: otapackage
+bacon: otapackage
 ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
 	$(error TARGET_CUSTOM_RELEASETOOL is deprecated)
 endif
-	@echo -e ${CL_YLW}"Running vendor releasetool..."${CL_RST}
-	$(hide) OTAPACKAGE=$(INTERNAL_OTA_PACKAGE_TARGET) APKCERTS=$(APKCERTS_FILE) ./vendor/carbon/tools/squisher
+	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(OCT_TARGET_PACKAGE)
+	$(hide) $(MD5SUM) $(OCT_TARGET_PACKAGE) > $(OCT_TARGET_PACKAGE).md5sum
+	@echo -e ${CL_CYN}"Package Complete: $(OCT_TARGET_PACKAGE)"${CL_RST}
 
 # -----------------------------------------------------------------
 # The update package

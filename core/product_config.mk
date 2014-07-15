@@ -184,16 +184,16 @@ ifneq ($(strip $(TARGET_BUILD_APPS)),)
 all_product_configs := $(call get-product-makefiles,\
     $(SRC_TARGET_DIR)/product/AndroidProducts.mk)
 else
-  ifneq ($(CARBON_BUILD),)
-    all_product_configs := $(shell ls device/*/$(CARBON_BUILD)/carbon.mk)
+  ifneq ($(OCT_BUILD),)
+    all_product_configs := $(shell ls device/*/$(OCT_BUILD)/oct.mk)
   else
     # Read in all of the product definitions specified by the AndroidProducts.mk
     # files in the tree.
     all_product_configs := $(get-all-product-makefiles)
-  endif # CARBON_BUILD
+  endif # OCT_BUILD
 endif
 
-ifeq ($(CARBON_BUILD),)
+ifeq ($(OCT_BUILD),)
 # Find the product config makefile for the current product.
 # all_product_configs consists items like:
 # <product_name>:<path_to_the_product_makefile>
@@ -362,8 +362,13 @@ endif
 # The rules for these copy steps are defined in build/core/Makefile.
 # The optional :<owner> is used to indicate the owner of a vendor file.
 PRODUCT_COPY_FILES := \
-    $(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_COPY_FILES)) \
-    $(lastword $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_BOOTANIMATION)):system/media/bootanimation.zip
+    $(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_COPY_FILES))
+_boot_animation := $(strip $(lastword $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_BOOTANIMATION)))
+ifneq ($(_boot_animation),)
+PRODUCT_COPY_FILES += \
+    $(_boot_animation):system/media/bootanimation.zip
+endif
+_boot_animation :=
 
 # We might want to skip items listed in PRODUCT_COPY_FILES for
 # various reasons. This is useful for replacing a binary module with one
