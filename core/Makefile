@@ -900,7 +900,7 @@ SYSTEMIMAGE_SOURCE_DIR := $(TARGET_OUT)
 ifneq ($(INSTALLED_RECOVERYIMAGE_TARGET),)
 intermediates := $(call intermediates-dir-for,PACKAGING,recovery_patch)
 ifndef BOARD_CUSTOM_BOOTIMG_MK
-ifeq ($(TG_BUILD),)
+ifeq ($(OCT_BUILD),)
 RECOVERY_FROM_BOOT_PATCH := $(intermediates)/recovery_from_boot.p
 else
 RECOVERY_FROM_BOOT_PATCH :=
@@ -1407,7 +1407,7 @@ else
     OTA_FROM_TARGET_SCRIPT := $(TARGET_RELEASETOOL_OTA_FROM_TARGET_SCRIPT)
 endif
 
-ifneq ($(TG_BUILD),)
+ifneq ($(OCT_BUILD),)
     $(INTERNAL_OTA_PACKAGE_TARGET): backuptool := true
 else
     $(INTERNAL_OTA_PACKAGE_TARGET): backuptool := false
@@ -1451,7 +1451,7 @@ bootzip: bootimage
 	   $(OUT) \
 	   $(TARGET_DEVICE)
 
-gummy: otapackage
+oct: otapackage
 ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
 	@echo -e ${CL_YLW}"Running custom releasetool..."${CL_RST}
 	$(hide) OTAPACKAGE=$(INTERNAL_OTA_PACKAGE_TARGET) APKCERTS=$(APKCERTS_FILE) $(TARGET_CUSTOM_RELEASETOOL)

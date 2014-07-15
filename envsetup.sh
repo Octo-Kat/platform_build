@@ -63,17 +63,17 @@ function check_product()
         return
     fi
 
-    if (echo -n $1 | grep -q -e "^tg_") ; then
-       TG_BUILD=$(echo -n $1 | sed -e 's/^tg_//g')
+    if (echo -n $1 | grep -q -e "^oct_") ; then
+       OCT_BUILD=$(echo -n $1 | sed -e 's/^oct_//g')
        if [ `uname` == "Darwin" ]; then
-           export BUILD_NUMBER=$((date +%s%N ; echo $TG_BUILD; hostname) | openssl sha1 | cut -c1-10)
+           export BUILD_NUMBER=$((date +%s%N ; echo $OCT_BUILD; hostname) | openssl sha1 | cut -c1-10)
        else
-           export BUILD_NUMBER=$((date +%s%N ; echo $TG_BUILD; hostname) | sha1sum | cut -c1-10)
+           export BUILD_NUMBER=$((date +%s%N ; echo $OCT_BUILD; hostname) | sha1sum | cut -c1-10)
        fi
     else
-       TG_BUILD=
+       OCT_BUILD=
     fi
-    export TG_BUILD
+    export OCT_BUILD
 
     CALLED_FROM_SETUP=true BUILD_SYSTEM=build/core \
         TARGET_PRODUCT=$1 \
@@ -461,7 +461,7 @@ function print_lunch_menu()
        echo "  (ohai, koush (and nocoast)!)"
     fi
     echo
-    if [ "z${TG_DEVICES_ONLY}" != "z" ]; then
+    if [ "z${OCT_DEVICES_ONLY}" != "z" ]; then
        echo "Breakfast menu... pick a combo:"
     else
        echo "Lunch menu... pick a combo:"
@@ -475,7 +475,7 @@ function print_lunch_menu()
         i=$(($i+1))
     done | column
 
-    if [ "z${TG_DEVICES_ONLY}" != "z" ]; then
+    if [ "z${OCT_DEVICES_ONLY}" != "z" ]; then
        echo "... and don't forget the bacon!"
     fi
 
@@ -669,7 +669,7 @@ function tapas()
 function eat()
 {
     if [ "$OUT" ] ; then
-        MODVERSION=$(get_build_var TG_VERSION)
+        MODVERSION=$(get_build_var OCT_VERSION)
         ZIPFILE=Gummy-$MODVERSION.zip
         ZIPPATH=$OUT/$ZIPFILE
         if [ ! -f $ZIPPATH ] ; then
@@ -685,7 +685,7 @@ function eat()
             done
             echo "Device Found.."
         fi
-    if (adb shell cat /system/build.prop | grep -q "ro.tg.device=$TG_BUILD");
+    if (adb shell cat /system/build.prop | grep -q "ro.oct.device=$OCT_BUILD");
     then
         # if adbd isn't root we can't write to /cache/recovery/
         adb root
@@ -714,7 +714,7 @@ EOF
     fi
     return $?
     else
-        echo "The connected device does not appear to be $TG_BUILD, run away!"
+        echo "The connected device does not appear to be $OCT_BUILD, run away!"
     fi
 }
 
@@ -1462,9 +1462,9 @@ function godir () {
     \cd $T/$pathname
 }
 
-function tgremote()
+function octremote()
 {
-    git remote rm tgremote 2> /dev/null
+    git remote rm octremote 2> /dev/null
     if [ ! -d .git ]
     then
         echo .git directory not found. Please run this from the root directory of the Android repository you wish to set up.
@@ -1479,14 +1479,14 @@ function tgremote()
           return 0
         fi
     fi
-    TGUSER=`git config --get review.gummyrom.com.username`
+    TGUSER=`git config --get review.octrom.com.username`
     if [ -z "$TGUSER" ]
     then
-        git remote add tgremote ssh://review.gummyrom.com:29418/$GERRIT_REMOTE
+        git remote add octremote ssh://review.octrom.com:29418/$GERRIT_REMOTE
     else
-        git remote add tgremote ssh://$TGUSER@review.gummyrom.com:29418/$GERRIT_REMOTE
+        git remote add octremote ssh://$TGUSER@review.octrom.com:29418/$GERRIT_REMOTE
     fi
-    echo You can now push to "tgremote".
+    echo You can now push to "octremote".
 }
 
 function aospremote()
@@ -1536,7 +1536,7 @@ function installboot()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 > /dev/null
     adb wait-for-online remount
-    if (adb shell cat /system/build.prop | grep -q "ro.tg.device=$TG_BUILD");
+    if (adb shell cat /system/build.prop | grep -q "ro.oct.device=$OCT_BUILD");
     then
         adb push $OUT/boot.img /cache/
         for i in $OUT/system/lib/modules/*;
@@ -1552,7 +1552,7 @@ function installboot()
         adb shell chmod 644 /system/lib/modules/*
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $TG_BUILD, run away!"
+        echo "The connected device does not appear to be $OCT_BUILD, run away!"
     fi
 }
 
@@ -1586,13 +1586,13 @@ function installrecovery()
     sleep 1
     adb wait-for-online shell mount /system 2>&1 >> /dev/null
     adb wait-for-online remount
-    if (adb shell cat /system/build.prop | grep -q "ro.tg.device=$TG_BUILD");
+    if (adb shell cat /system/build.prop | grep -q "ro.oct.device=$OCT_BUILD");
     then
         adb push $OUT/recovery.img /cache/
         adb shell dd if=/cache/recovery.img of=$PARTITION
         echo "Installation complete."
     else
-        echo "The connected device does not appear to be $TG_BUILD, run away!"
+        echo "The connected device does not appear to be $OCT_BUILD, run away!"
     fi
 }
 
@@ -1615,8 +1615,8 @@ function makerecipe() {
   if [ "$REPO_REMOTE" == "github" ]
   then
     pwd
-    tgremote
-    git push tgremote HEAD:refs/heads/'$1'
+    octremote
+    git push octremote HEAD:refs/heads/'$1'
   fi
   '
 
@@ -1625,12 +1625,12 @@ function makerecipe() {
   cd ..
 }
 
-function tggerrit() {
+function octgerrit() {
     if [ $# -eq 0 ]; then
         $FUNCNAME help
         return 1
     fi
-    local user=`git config --get review.gummyrom.com.username`
+    local user=`git config --get review.octrom.com.username`
     local review=`git config --get remote.github.review`
     local project=`git config --get remote.github.projectname`
     local command=$1
@@ -1666,7 +1666,7 @@ EOF
             case $1 in
                 __cmg_*) echo "For internal use only." ;;
                 changes|for)
-                    if [ "$FUNCNAME" = "tggerrit" ]; then
+                    if [ "$FUNCNAME" = "octgerrit" ]; then
                         echo "'$FUNCNAME $1' is deprecated."
                     fi
                     ;;
@@ -1759,7 +1759,7 @@ EOF
                 $local_branch:refs/for/$remote_branch || return 1
             ;;
         changes|for)
-            if [ "$FUNCNAME" = "tggerrit" ]; then
+            if [ "$FUNCNAME" = "octgerrit" ]; then
                 echo >&2 "'$FUNCNAME $command' is deprecated."
             fi
             ;;
@@ -1858,7 +1858,7 @@ EOF
     esac
 }
 
-function tgrebase() {
+function octrebase() {
     local repo=$1
     local refs=$2
     local pwd="$(pwd)"
@@ -1866,7 +1866,7 @@ function tgrebase() {
 
     if [ -z $repo ] || [ -z $refs ]; then
         echo "CyanogenMod Gerrit Rebase Usage: "
-        echo "      tgrebase <path to project> <patch IDs on Gerrit>"
+        echo "      octrebase <path to project> <patch IDs on Gerrit>"
         echo "      The patch IDs appear on the Gerrit commands that are offered."
         echo "      They consist on a series of numbers and slashes, after the text"
         echo "      refs/changes. For example, the ID in the following command is 26/8126/2"
@@ -1887,7 +1887,7 @@ function tgrebase() {
     echo "Bringing it up to date..."
     repo sync .
     echo "Fetching change..."
-    git fetch "http://review.gummyrom.com/p/$repo" "refs/changes/$refs" && git cherry-pick FETCH_HEAD
+    git fetch "http://review.octrom.com/p/$repo" "refs/changes/$refs" && git cherry-pick FETCH_HEAD
     if [ "$?" != "0" ]; then
         echo "Error cherry-picking. Not uploading!"
         return
@@ -1914,7 +1914,7 @@ function cmka() {
     if [ ! -z "$1" ]; then
         for i in "$@"; do
             case $i in
-                gummy|otapackage|systemimage)
+                oct|otapackage|systemimage)
                     mka installclean
                     mka $i
                     ;;
@@ -1973,7 +1973,7 @@ function dopush()
         echo "Device Found."
     fi
 
-    if (adb shell cat /system/build.prop | grep -q "ro.tg.device=$TG_BUILD");
+    if (adb shell cat /system/build.prop | grep -q "ro.oct.device=$OCT_BUILD");
     then
     # retrieve IP and PORT info if we're using a TCP connection
     TCPIPPORT=$(adb devices | egrep '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+:[0-9]+[^0-9]+' \
@@ -2024,7 +2024,7 @@ function dopush()
     rm -f $OUT/.log
     return 0
     else
-        echo "The connected device does not appear to be $TG_BUILD, run away!"
+        echo "The connected device does not appear to be $OCT_BUILD, run away!"
     fi
 }
 
@@ -2036,7 +2036,7 @@ alias cmkap='dopush cmka'
 function fixup_common_out_dir() {
     common_out_dir=$(get_build_var OUT_DIR)/target/common
     target_device=$(get_build_var TARGET_DEVICE)
-    if [ ! -z $TG_FIXUP_COMMON_OUT ]; then
+    if [ ! -z $OCT_FIXUP_COMMON_OUT ]; then
         if [ -d ${common_out_dir} ] && [ ! -L ${common_out_dir} ]; then
             mv ${common_out_dir} ${common_out_dir}-${target_device}
             ln -s ${common_out_dir}-${target_device} ${common_out_dir}
