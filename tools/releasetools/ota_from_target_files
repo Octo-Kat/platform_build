@@ -523,6 +523,7 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
   script.ShowProgress(0.5, 0)
 
   if OPTIONS.wipe_user_data:
+    script.Print("Formatting /data")
     script.FormatPartition("/data")
     
   script.ShowProgress(0.5, 0)
@@ -546,19 +547,21 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
   script.Print(" Home of OctOS, AOSP-S4 and BroodROM!")
   script.Print("        <<< AOSP 4.4.4 >>> ")
   script.Print("")
-  script.Print("{x}...Formatting system partition...")
   script.Print("")
 
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
 
+  script.Print("Formatting system partition...")
   script.FormatPartition("/system")
   script.Mount("/system")
   if not OPTIONS.no_separate_recovery:
     script.UnpackPackageDir("recovery", "/system")
+    script.Print("Extracting /system")
   script.UnpackPackageDir("system", "/system")
 
   symlinks = CopySystemFiles(input_zip, output_zip)
+  script.Print("Creating Symlinks")
   script.MakeSymlinks(symlinks)
 
   boot_img = common.GetBootableImage("boot.img", "boot.img",
@@ -582,9 +585,11 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
     script.RunBackup("restore")
 
   script.ShowProgress(0.2, 10)
+  script.Print("Flashing boot.img")
   script.WriteRawImage("/boot", "boot.img")
 
   script.ShowProgress(0.1, 0)
+  script.Print("Welcome to OctOs..!");
   device_specific.FullOTA_InstallEnd()
 
   if OPTIONS.extra_script is not None:
