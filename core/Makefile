@@ -178,7 +178,7 @@ define default-locale-language
 $(if $(product_property_override_locale_language),,$(word 1, $(call default-locale, $(1))))
 endef
 define default-locale-region
-$(if $(product_property_overrides_locale_region),,$(word 2, $(call default-locale, $(1))))
+ifndef BOARD_CUSTOM_BOOTIMG_MKdefault-locale, $(1))))
 endef
 
 BUILDINFO_SH := build/tools/buildinfo.sh
@@ -1484,15 +1484,15 @@ $(INTERNAL_OTA_PACKAGE_TARGET): $(BUILT_TARGET_FILES_PACKAGE) $(DISTTOOLS)
 
 OCT_TARGET_PACKAGE := $(PRODUCT_OUT)/cm-$(OCT_VERSION).zip
 
-.PHONY: otapackage bacon
+.PHONY: otapackage oct
 otapackage: $(INTERNAL_OTA_PACKAGE_TARGET)
-bacon: otapackage
+oct: otapackage
 ifneq ($(TARGET_CUSTOM_RELEASETOOL),)
 	$(error TARGET_CUSTOM_RELEASETOOL is deprecated)
 endif
-	$(hide) ln -f $(INTERNAL_OTA_PACKAGE_TARGET) $(OCT_TARGET_PACKAGE)
-	$(hide) $(MD5SUM) $(OCT_TARGET_PACKAGE) > $(OCT_TARGET_PACKAGE).md5sum
-	@echo -e ${CL_CYN}"Package Complete: $(OCT_TARGET_PACKAGE)"${CL_RST}
+	@echo -e ${CL_YLW}"Running vendor releasetool..."${CL_RST}
+	$(hide) OTAPACKAGE=$(INTERNAL_OTA_PACKAGE_TARGET)
+APKCERTS=$(APKCERTS_FILE) ./vendor/oct/tools/squisher
 
 # -----------------------------------------------------------------
 # The update package
