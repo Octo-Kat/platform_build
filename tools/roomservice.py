@@ -34,28 +34,28 @@ except ImportError:
 
 # Config
 # set this to the default remote to use in repo
-default_rem = "cr"
+default_rem = "ok"
 # set this to the default revision to use (branch/tag name)
-default_rev = "kk"
+default_rev = "WIP" #Temp branch until merged
 # set this to the remote that you use for projects from your team repos
 # example fetch="https://github.com/omnirom"
-default_team_rem = "cr"
+default_team_rem = "ok"
 # this shouldn't change unless google makes changes
 local_manifest_dir = ".repo/local_manifests"
 # change this to your name on github (or equivalent hosting)
-android_team = "CarbonDev"
+platform_team = "Octo-Kat"
 
 
 def check_repo_exists(git_data):
     if not int(git_data.get('total_count', 0)):
         raise Exception("{} not found in {} Github, exiting "
-                        "roomservice".format(device, android_team))
+                        "roomservice".format(device, platform_team))
 
 
 # Note that this can only be done 5 times per minute
 def search_github_for_device(device):
     git_search_url = "https://api.github.com/search/repositories" \
-                     "?q=%40{}+android_device+{}+fork:true".format(android_team, device)
+                     "?q=%40{}+platform_device+{}+fork:true".format(platform_team, device)
     git_req = urllib.request.Request(git_search_url)
     # this api is a preview at the moment. accept the custom media type
     git_req.add_header('Accept', 'application/vnd.github.preview')
@@ -74,9 +74,9 @@ def get_device_url(git_data):
     device_url = ""
     for item in git_data['items']:
         temp_url = item.get('html_url')
-        if "{}/android_device".format(android_team) in temp_url:
+        if "{}/platform_device".format(platform_team) in temp_url:
             try:
-                temp_url = temp_url[temp_url.index("android_device"):]
+                temp_url = temp_url[temp_url.index("platform_device"):]
             except ValueError:
                 pass
             else:
@@ -85,13 +85,13 @@ def get_device_url(git_data):
                     break
 
     if device_url:
-        return "{}/{}".format(android_team, device_url)
+        return "{}/{}".format(platform_team, device_url)
     raise Exception("{} not found in {} Github, exiting "
-                    "roomservice".format(device, android_team))
+                    "roomservice".format(device, platform_team))
 
 
 def parse_device_directory(device_url,device):
-    to_strip = "android_device"
+    to_strip = "platform_device"
     repo_name = device_url[device_url.index(to_strip) + len(to_strip):]
     repo_name = repo_name[:repo_name.index(device)]
     repo_dir = repo_name.replace("_", "/")
@@ -183,7 +183,7 @@ def write_to_manifest(manifest):
 def parse_device_from_manifest(device):
     for project in iterate_manifests():
         name = project.get('name')
-        if name.startswith("android_device_") and name.endswith(device):
+        if name.startswith("platform_device_") and name.endswith(device):
             return project.get('path')
     return None
 
@@ -206,7 +206,7 @@ def parse_device_from_folder(device):
 
 
 def parse_dependency_file(location):
-    dep_file = "carbon.dependencies"
+    dep_file = "oct.dependencies"
     dep_location = '/'.join([location, dep_file])
     if not os.path.isfile(dep_location):
         print("WARNING: %s file not found" % dep_location)
@@ -227,11 +227,11 @@ def create_dependency_manifest(dependencies):
         revision = dependency.get("revision", default_rev)
         remote = dependency.get("remote", default_rem)
 
-        # not adding an organization should default to android_team
+        # not adding an organization should default to platform_team
         # only apply this to github
         if remote == "github":
             if not "/" in repository:
-                repository = '/'.join([android_team, repository])
+                repository = '/'.join([platform_team, repository])
         project = create_manifest_project(repository,
                                           target_path,
                                           remote=remote,
