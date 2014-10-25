@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# coding: utf-8
 #
 # Copyright (C) 2008 The Android Open Source Project
 #
@@ -525,17 +524,20 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
   script.ShowProgress(0.5, 0)
   script.Print("")
   script.Print("")
-  script.Print("                             ")
-  script.Print(" ▒█████   ▄████▄  ▄▄▄█████▓ ▒█████    ██████") 
-  script.Print("▒██▒  ██▒▒██▀ ▀█  ▓  ██▒ ▓▒▒██▒  ██▒▒██    ▒") 
-  script.Print("▒██░  ██▒▒▓█    ▄ ▒ ▓██░ ▒░▒██░  ██▒░ ▓██▄")   
-  script.Print("▒██   ██░▒▓▓▄ ▄██▒░ ▓██▓ ░ ▒██   ██░  ▒   ██▒")
-  script.Print("░ ████▓▒░▒ ▓███▀ ░  ▒██▒ ░ ░ ████▓▒░▒██████▒▒")
-  script.Print("░ ▒░▒░▒░ ░ ░▒ ▒  ░  ▒ ░░   ░ ▒░▒░▒░ ▒ ▒▓▒ ▒ ░")
-  script.Print("  ░ ▒ ▒░   ░  ▒       ░      ░ ▒ ▒░ ░ ░▒  ░ ░")
-  script.Print("░ ░ ░ ▒  ░          ░      ░ ░ ░ ▒  ░  ░  ░")  
-  script.Print("    ░ ░  ░ ░                   ░ ░        ░")  
-  script.Print("         ░")                                   
+  script.Print("")
+  script.Print("")
+  script.Print("")
+  script.Print("             -/ossosys+-`    ")           
+  script.Print("          -yNNs-     -sNMh:  ")        
+  script.Print("         sMMd.         `hMMh`")      
+  script.Print("        sMMM.   odhdo   `NMMh")     
+  script.Print("        NMMm   +M.`sM+   hMMN")    
+  script.Print("        dMMN   `ymymh`   dMMm")    
+  script.Print("        -NMM/     `     :MMN-")    
+  script.Print("         `sNN+.       -sMNs` ")     
+  script.Print("        -+:`:odN+   +mdo:`:+-")      
+  script.Print("        yMMmddmMM- -MMmddmMMh")     
+  script.Print("        -yhhhhhhs`  shhhhhhy:")    
   script.Print("")
   script.Print("{x}...Formatting system partition...")
 
