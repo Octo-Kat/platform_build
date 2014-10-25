@@ -525,7 +525,7 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
   script.ShowProgress(0.5, 0)
   script.Print("")
   script.Print("")
-  script.Print("")
+  script.Print("                             ")
   script.Print(" ▒█████   ▄████▄  ▄▄▄█████▓ ▒█████    ██████") 
   script.Print("▒██▒  ██▒▒██▀ ▀█  ▓  ██▒ ▓▒▒██▒  ██▒▒██    ▒") 
   script.Print("▒██░  ██▒▒▓█    ▄ ▒ ▓██░ ▒░▒██░  ██▒░ ▓██▄")   
