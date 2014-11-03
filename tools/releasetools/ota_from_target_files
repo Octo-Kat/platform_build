@@ -537,28 +537,23 @@ else if get_stage("%(bcb_dev)s", "stage") == "3/3" then
   if OPTIONS.wipe_user_data:
     script.FormatPartition("/data")
 
-  script.Print("                                 ");
-  script.Print("                                 ");
-  script.Print("888888888888888888888888888888888");
-  script.Print("8                               8");
-  script.Print("8         .;codddddol:,.        8");
-  script.Print("8      :ONM0l,.   ..:kNMXd,     8");
-  script.Print("8   .dNMMO'           .lNMMK:   8");
-  script.Print("8  'XMMMx       ..      .NMMMk  8");
-  script.Print("8 .XMMMX     :KNKXXd.    lMMMMc 8");
-  script.Print("8 :MMMMx    ;MO  :0Mx    .MMMMO 8");
-  script.Print("8 :MMMMx    .XXl,;OWc    .MMMMk 8");
-  script.Print("8  XMMMK      :dkxl.     cMMMW, 8");
-  script.Print("8  .0MMMo               'XMMN:  8");
-  script.Print("8    :KMMx'           'dWMNd.   8");
-  script.Print("8   .  'oONW0:     .dXW0d;  .   8");
-  script.Print("8 .0MWx:;;:KMMo   'XMWl;;;lXMN, 8");
-  script.Print("8 .XMMMMMMMMMMk   :WMMMMMMMMMW; 8");
-  script.Print("8  .cldoododol'   .:doododooo,  8");
-  script.Print("8                               8");
-  script.Print("88888888888*TEAM*OCTOS*8888888888");
-  script.Print("                                 ");
-  script.Print("                                 ");
+  script.Print("                                                       ");
+  script.Print("                                                       ");
+  script.Print("   ::::::::::::.,::::::   :::.     .        :          ");
+  script.Print("   ;;;;;;;;'''';;;;''''   ;;`;;    ;;,.    ;;;         ");
+  script.Print("        [[      [[cccc   ,[[ '[[,  [[[[, ,[[[[,        ");
+  script.Print("        $$      $$''''  c$$$cc$$$c $$$$$$$$'$$$        ");
+  script.Print("        88,     888oo,__ 888   888,888 Y88' 888o       ");
+  script.Print("        MMM     ''''YUMMMYMM   ''` MMM  M'  'MMM       ");
+  script.Print("                                                       ");
+  script.Print("    ...       .,-:::::::::::::::::   ...      .::::::. "); 
+  script.Print(" .;;;;;;;.  ,;;;'````';;;;;;;;''''.;;;;;;;.  ;;;`    ` ");
+  script.Print(",[[     \[[,[[[            [[    ,[[     \[[,'[==/[[[[,");
+  script.Print("$$$,     $$$$$$            $$    $$$,     $$$  '''    $");
+  script.Print("'888,_ _,88P`88bo,__,o,    88,   '888,_ _,88P 88b    dP");
+  script.Print("  'YMMMMMP'   'YUMMMMMP'   MMM     'YMMMMMP'   'YMmMY' ");
+  script.Print("                                                       ");
+  script.Print("                                                       ");
 
   if "selinux_fc" in OPTIONS.info_dict:
     WritePolicyConfig(OPTIONS.info_dict["selinux_fc"], output_zip)
